@@ -268,54 +268,47 @@
             const container = document.getElementById('cardsContainer');
             const message = document.getElementById('message');
 
-            if (!searchTerm && !setFilter) {
-                message.innerHTML = '<div class="error">Please enter a search term or select a set</div>';
-                return;
-            }
-
             loading.style.display = 'block';
             container.innerHTML = '';
             message.innerHTML = '';
 
             try {
                 const params = new URLSearchParams({
-                    limit: 20,
+                    set: 'blk',
+                    rarity: 'SAR',
+                    limit: 50,
                     includeHistory: 'true'
                 });
-
-                if (searchTerm) params.append('search', searchTerm);
-                if (setFilter) params.append('set', setFilter);
 
                 const response = await fetch(
                     `${API_BASE}/cards?${params}`,
                     {
                         headers: {
-                            'Authorization': `Bearer ${API_KEY}`
+                            'Authorization': `Bearer ${API_KEY}`,
+                            'Content-Type': 'application/json'
                         }
                     }
                 );
 
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-
+                console.log('API Response Status:', response.status);
                 const data = await response.json();
+                console.log('API Response:', data);
                 
                 if (!data.cards || data.cards.length === 0) {
-                    container.innerHTML = '<div class="no-results">No cards found. Try a different search.</div>';
+                    container.innerHTML = '<div class="no-results">No SAR cards found in BLK set.</div>';
                     message.innerHTML = '<div class="error">No results found</div>';
                     loading.style.display = 'none';
                     return;
                 }
 
                 displayCards(data.cards);
-                message.innerHTML = `<div class="success">Found ${data.cards.length} card(s)</div>`;
-                document.getElementById('stats').textContent = `Showing ${data.cards.length} results`;
+                message.innerHTML = `<div class="success">Found ${data.cards.length} SAR card(s) in BLK set</div>`;
+                document.getElementById('stats').textContent = `Showing ${data.cards.length} Special Art Rare cards`;
 
             } catch (error) {
                 console.error('Error:', error);
-                message.innerHTML = `<div class="error">Error fetching cards: ${error.message}</div>`;
-                container.innerHTML = '<div class="no-results">Failed to load cards. Check your connection and try again.</div>';
+                message.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                container.innerHTML = '<div class="no-results">Failed to load cards. Error details in browser console.</div>';
             } finally {
                 loading.style.display = 'none';
             }
@@ -374,8 +367,11 @@
             if (e.key === 'Enter') searchCards();
         });
 
-        // Initial message
-        document.getElementById('message').innerHTML = '<div class="success">Ready to search! Enter a Pokémon card name or select a set.</div>';
+        // Load SAR cards from BLK set on page load
+        window.addEventListener('load', () => {
+            document.getElementById('message').innerHTML = '<div class="success">Loading Special Art Rare cards from BLK set...</div>';
+            searchCards();
+        });
     </script>
 </body>
 </html>
