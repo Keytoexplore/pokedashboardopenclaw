@@ -221,9 +221,6 @@
     </div>
 
     <script>
-        const API_KEY = 'Pokeprice_free_88f3a794ecdc4c626b6f1f279a718fa30c59f25830948f57';
-        const API_BASE = 'https://www.pokemonpricetracker.com/api/v2';
-
         async function loadCards() {
             const loading = document.getElementById('loading');
             const container = document.getElementById('cardsContainer');
@@ -234,16 +231,15 @@
             message.innerHTML = '';
 
             try {
-                console.log('Starting API request...');
+                console.log('Starting API request via proxy...');
                 
-                // Try to fetch all cards from BLK set first
-                const url = `${API_BASE}/cards?set=blk&limit=100`;
+                // Use the local API proxy endpoint
+                const url = `/api/cards?set=blk&limit=100`;
                 console.log('Fetching from:', url);
 
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
                         'Accept': 'application/json'
                     }
                 });
